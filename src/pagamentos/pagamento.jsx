@@ -34,7 +34,7 @@ function Pagamento() {
         setMensagem("🔄 Gerando PIX...");
 
         try {
-            const res = await fetch("http://localhost:3001/api/pagar/pix", {
+            const res = await fetch("https://sevidorlojareact.onrender.com/api/pagar/pix", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ valor, descricao, email }),
@@ -81,7 +81,7 @@ function Pagamento() {
             const token = tokenResult.id;
             setMensagem("🔄 Processando pagamento...");
 
-            const res = await fetch("http://localhost:3001/api/pagar/cartao", {
+            const res = await fetch("https://sevidorlojareact.onrender.com/api/pagar/cartao", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
