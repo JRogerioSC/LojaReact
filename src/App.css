@@ -1,0 +1,122 @@
+body {
+    font-family: "Poppins", sans-serif;
+    background: #f2f2f2;
+    margin: 0;
+}
+
+.menu {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 20px;
+    background: #222;
+}
+
+.menu li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.produtos-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.produto {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 250px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.produto img {
+    width: 200px;
+    height: 130px;
+    object-fit: contain;
+}
+
+.preco {
+    font-size: 1.2em;
+    color: #222;
+}
+
+.comprar {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.comprar:hover {
+    background: #0056b3;
+}
+
+.pagamento {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.qrcode {
+    width: 250px;
+    margin: 20px auto;
+}
+
+.pixtext {
+    width: 80%;
+    height: 100px;
+    margin-top: 10px;
+}
+
+.cartao input {
+    display: block;
+    width: 80%;
+    margin: 5px auto;
+    padding: 8px;
+}
+
+.comprovante {
+    background: green;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.tipos {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.pagar {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.mensagem {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+ul a:hover{
+    color: #68d429;
+    opacity: 0.5;
+}

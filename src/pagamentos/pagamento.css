@@ -1,0 +1,31 @@
+.qr-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.qr-section img {
+    width: 200px;
+    margin: 10px 0;
+}
+
+.qr-section textarea {
+    width: 100%;
+    height: 60px;
+    resize: none;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.comprovante {
+    margin-top: 25px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.comprovante h3 {
+    margin-bottom: 10px;
+    text-align: center;
+}

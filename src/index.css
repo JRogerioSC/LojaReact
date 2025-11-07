@@ -1,0 +1,234 @@
+/* =========================
+   ESTILO GERAL
+========================= */
+* {
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #f2f2f2;
+    color: #222;
+}
+
+/* =========================
+   MENU SUPERIOR
+========================= */
+.menu {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 20px;
+    background: #111;
+    margin: 0;
+}
+
+.menu li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.menu li a:hover {
+    color: #00b7ff;
+}
+
+/* =========================
+   SEÇÃO DE PRODUTOS
+========================= */
+.produtos-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 40px;
+    padding-bottom: 60px;
+}
+
+.produto {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    width: 260px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.produto:hover {
+    transform: translateY(-5px);
+}
+
+.produto img {
+    width: 220px;
+    height: 140px;
+    object-fit: contain;
+}
+
+.preco {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #333;
+    margin: 10px 0;
+}
+
+.comprar {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.comprar:hover {
+    background: #0056b3;
+}
+
+/* =========================
+   TELA DE PAGAMENTO
+========================= */
+.pagamento {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+}
+
+.pagamento h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.valor {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.tipos {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.qrcode {
+    width: 220px;
+    height: 220px;
+    margin: 20px auto;
+    display: block;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    padding: 10px;
+    background: white;
+}
+
+.pixtext {
+    width: 80%;
+    height: 90px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    resize: none;
+}
+
+/* =========================
+   FORMULÁRIO DE CARTÃO
+========================= */
+.cartao {
+    background: white;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cartao input {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.cartao input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.pagar {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+.pagar:hover {
+    background: #0056b3;
+}
+
+/* =========================
+   MENSAGENS E COMPROVANTE
+========================= */
+.mensagem {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.comprovante {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    cursor: pointer;
+    margin-top: 30px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.comprovante:hover {
+    background: #1f7a33;
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+@media (max-width: 768px) {
+    .produtos-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .produto {
+        width: 90%;
+    }
+
+    .cartao {
+        width: 95%;
+    }
+
+    .pixtext {
+        width: 95%;
+    }
+}
