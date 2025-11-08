@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./pagamento.css";
 
 function Pagamento() {
@@ -9,7 +9,19 @@ function Pagamento() {
     const [mensagem, setMensagem] = useState("");
     const [qrBase64, setQrBase64] = useState("");
     const [pixCode, setPixCode] = useState("");
-    const [tokenCartao, setTokenCartao] = useState(""); // token simulado do cartão
+
+    const [numero, setNumero] = useState("");
+    const [expMes, setExpMes] = useState("");
+    const [expAno, setExpAno] = useState("");
+    const [cvv, setCvv] = useState("");
+    const [titular, setTitular] = useState("");
+    const [mp, setMp] = useState(null);
+
+    useEffect(() => {
+        // Inicializa SDK do Mercado Pago
+        const mpInstance = new window.MercadoPago("APP_USR-c4a1f460-54a7-45c4-a883-df06f161aab2");
+        setMp(mpInstance);
+    }, []);
 
     const gerarPagamento = async () => {
         if (!valor || !descricao || !email) {
@@ -20,22 +32,25 @@ function Pagamento() {
         setMensagem("🔄 Gerando pagamento...");
 
         try {
-            // ✅ Endpoint correto conforme o tipo de pagamento
-            const url =
-                tipo === "pix"
-                    ? "https://sevidorlojareact.onrender.com/api/pagar/pix"
-                    : "https://sevidorlojareact.onrender.com/api/pagar/cartao";
+            let url, body;
 
-            // ✅ Corpo da requisição conforme tipo
-            const body =
-                tipo === "pix"
-                    ? { valor, descricao, email }
-                    : {
-                        token: tokenCartao || "fake-token-teste", // token simulado
-                        valor,
-                        descricao,
-                        email,
-                    };
+            if (tipo === "pix") {
+                url = "https://sevidorlojareact.onrender.com/api/pagar/pix";
+                body = { valor, descricao, email };
+            } else {
+                // Cria token do cartão via SDK
+                const cardData = {
+                    cardNumber: numero,
+                    cardholderName: titular,
+                    cardExpirationMonth: expMes,
+                    cardExpirationYear: expAno,
+                    securityCode: cvv,
+                };
+
+                const token = await mp.createCardToken(cardData);
+                url = "https://sevidorlojareact.onrender.com/api/pagar/cartao";
+                body = { token: token.id, valor, descricao, email };
+            }
 
             const res = await fetch(url, {
                 method: "POST",
@@ -52,21 +67,17 @@ function Pagamento() {
                     setMensagem("✅ PIX gerado com sucesso!");
                 } else {
                     setMensagem("❌ Erro ao gerar PIX.");
-                    console.error(data);
                 }
             } else {
-                // 💳 Resposta do pagamento com cartão
                 if (data.status === "approved") {
                     setMensagem("✅ Pagamento aprovado!");
-                } else if (data.status === "in_process") {
-                    setMensagem("⏳ Pagamento em análise...");
                 } else {
-                    setMensagem(`💬 Status: ${data.status || "erro"}`);
+                    setMensagem(`💬 Status: ${data.status}`);
                 }
             }
-        } catch (err) {
-            console.error("Erro de conexão:", err);
-            setMensagem("⚠️ Erro ao conectar com o servidor.");
+        } catch (error) {
+            console.error(error);
+            setMensagem("❌ Erro ao conectar com o servidor.");
         }
     };
 
@@ -114,15 +125,40 @@ function Pagamento() {
                 </label>
             </div>
 
-            {/* Campos adicionais para cartão */}
             {tipo === "cartao" && (
-                <div className="cartao-area">
+                <div className="cartao">
                     <input
                         type="text"
-                        placeholder="Token do cartão (simulação)"
-                        value={tokenCartao}
-                        onChange={(e) => setTokenCartao(e.target.value)}
+                        placeholder="Número do cartão"
+                        value={numero}
+                        onChange={(e) => setNumero(e.target.value)}
                     />
+                    <input
+                        type="text"
+                        placeholder="Nome do titular"
+                        value={titular}
+                        onChange={(e) => setTitular(e.target.value)}
+                    />
+                    <div className="duplo">
+                        <input
+                            type="text"
+                            placeholder="Mês"
+                            value={expMes}
+                            onChange={(e) => setExpMes(e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Ano"
+                            value={expAno}
+                            onChange={(e) => setExpAno(e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="CVV"
+                            value={cvv}
+                            onChange={(e) => setCvv(e.target.value)}
+                        />
+                    </div>
                 </div>
             )}
 
@@ -130,7 +166,6 @@ function Pagamento() {
                 {tipo === "pix" ? "Gerar PIX" : "Pagar com Cartão"}
             </button>
 
-            {/* Exibir QR Code PIX */}
             {qrBase64 && (
                 <div className="pix-area">
                     <img
@@ -138,9 +173,7 @@ function Pagamento() {
                         alt="QR Code PIX"
                         className="qrcode"
                     />
-                    <p>
-                        <strong>Código Copia e Cola:</strong>
-                    </p>
+                    <p><strong>Código Copia e Cola:</strong></p>
                     <textarea readOnly value={pixCode} className="pixtext" />
                 </div>
             )}
@@ -151,3 +184,4 @@ function Pagamento() {
 }
 
 export default Pagamento;
+
