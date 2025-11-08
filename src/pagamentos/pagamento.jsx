@@ -9,8 +9,8 @@ function Pagamento() {
     const [mensagem, setMensagem] = useState("");
     const [qrBase64, setQrBase64] = useState("");
     const [pixCode, setPixCode] = useState("");
+    const [tokenCartao, setTokenCartao] = useState(""); // token simulado do cartão
 
-    // 🔹 GERAR PAGAMENTO (PIX ou Cartão)
     const gerarPagamento = async () => {
         if (!valor || !descricao || !email) {
             setMensagem("⚠️ Preencha todos os campos!");
@@ -20,29 +20,52 @@ function Pagamento() {
         setMensagem("🔄 Gerando pagamento...");
 
         try {
-            const res = await fetch("https://sevidorlojareact.onrender.com/api/checkout", {
+            // ✅ Endpoint correto conforme o tipo de pagamento
+            const url =
+                tipo === "pix"
+                    ? "https://sevidorlojareact.onrender.com/api/pagar/pix"
+                    : "https://sevidorlojareact.onrender.com/api/pagar/cartao";
+
+            // ✅ Corpo da requisição conforme tipo
+            const body =
+                tipo === "pix"
+                    ? { valor, descricao, email }
+                    : {
+                        token: tokenCartao || "fake-token-teste", // token simulado
+                        valor,
+                        descricao,
+                        email,
+                    };
+
+            const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tipo, valor, descricao, email }),
+                body: JSON.stringify(body),
             });
 
             const data = await res.json();
 
             if (tipo === "pix") {
-                if (data.point_of_interaction?.transaction_data) {
-                    setQrBase64(data.point_of_interaction.transaction_data.qr_code_base64);
-                    setPixCode(data.point_of_interaction.transaction_data.qr_code);
+                if (data.qr_base64) {
+                    setQrBase64(data.qr_base64);
+                    setPixCode(data.qr_code);
                     setMensagem("✅ PIX gerado com sucesso!");
                 } else {
                     setMensagem("❌ Erro ao gerar PIX.");
+                    console.error(data);
                 }
-            } else if (data.status === "approved") {
-                setMensagem("✅ Pagamento aprovado!");
             } else {
-                setMensagem(`💬 Status: ${data.status}`);
+                // 💳 Resposta do pagamento com cartão
+                if (data.status === "approved") {
+                    setMensagem("✅ Pagamento aprovado!");
+                } else if (data.status === "in_process") {
+                    setMensagem("⏳ Pagamento em análise...");
+                } else {
+                    setMensagem(`💬 Status: ${data.status || "erro"}`);
+                }
             }
         } catch (err) {
-            console.error(err);
+            console.error("Erro de conexão:", err);
             setMensagem("⚠️ Erro ao conectar com o servidor.");
         }
     };
@@ -87,15 +110,27 @@ function Pagamento() {
                         checked={tipo === "cartao"}
                         onChange={() => setTipo("cartao")}
                     />
-                    Cartão (simulação)
+                    Cartão
                 </label>
             </div>
+
+            {/* Campos adicionais para cartão */}
+            {tipo === "cartao" && (
+                <div className="cartao-area">
+                    <input
+                        type="text"
+                        placeholder="Token do cartão (simulação)"
+                        value={tokenCartao}
+                        onChange={(e) => setTokenCartao(e.target.value)}
+                    />
+                </div>
+            )}
 
             <button onClick={gerarPagamento}>
                 {tipo === "pix" ? "Gerar PIX" : "Pagar com Cartão"}
             </button>
 
-            {/* Mostra QR Code se for PIX */}
+            {/* Exibir QR Code PIX */}
             {qrBase64 && (
                 <div className="pix-area">
                     <img
