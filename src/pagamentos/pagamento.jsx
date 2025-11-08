@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import "./pagamento.css";
 
 function Pagamento() {
@@ -16,6 +17,18 @@ function Pagamento() {
     const [cvv, setCvv] = useState("");
     const [titular, setTitular] = useState("");
     const [mp, setMp] = useState(null);
+
+    const location = useLocation();
+
+    // 📦 Ao carregar a página, pegar valor e descrição da URL
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const valorParam = params.get("valor");
+        const descricaoParam = params.get("descricao");
+
+        if (valorParam) setValor(valorParam);
+        if (descricaoParam) setDescricao(descricaoParam);
+    }, [location.search]);
 
     useEffect(() => {
         // Inicializa SDK do Mercado Pago
@@ -83,19 +96,21 @@ function Pagamento() {
 
     return (
         <div className="pagamento">
-            <h2>💳 Checkout API - Mercado Pago</h2>
+            <h2>💳 Checkout - Mercado Pago</h2>
 
             <input
                 type="text"
                 placeholder="Descrição do produto"
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
+                readOnly // 🔒 bloqueia edição (opcional)
             />
             <input
                 type="number"
                 placeholder="Valor (R$)"
                 value={valor}
                 onChange={(e) => setValor(e.target.value)}
+                readOnly // 🔒 bloqueia edição (opcional)
             />
             <input
                 type="email"
@@ -184,4 +199,3 @@ function Pagamento() {
 }
 
 export default Pagamento;
-
