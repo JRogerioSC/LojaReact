@@ -169,3 +169,30 @@ ul a:hover {
     transform: none;
     color: #666;
 }
+
+/* 🔹 Rodapé Profissional */
+.rodape {
+    background-color: #111;
+    color: #eee;
+    padding: 30px 10px;
+    margin-top: 40px;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    border-top: 3px solid #6c63ff;
+}
+
+.rodape-conteudo p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.rodape-site a {
+    color: #6c63ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.rodape-site a:hover {
+    color: #958df1;
+}

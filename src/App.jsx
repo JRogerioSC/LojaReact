@@ -11,7 +11,7 @@ function Home({ produtos, atualizarEstoque }) {
   const [quantidades, setQuantidades] = useState({});
 
   const handleQuantidadeChange = (nome, valor, estoque) => {
-    const qtd = Math.max(1, Math.min(Number(valor), estoque)); // evita ultrapassar estoque
+    const qtd = Math.max(1, Math.min(Number(valor), estoque));
     setQuantidades((prev) => ({
       ...prev,
       [nome]: qtd,
@@ -20,6 +20,7 @@ function Home({ produtos, atualizarEstoque }) {
 
   return (
     <div className="home">
+      {/* 🔹 Menu */}
       <ul className="menu">
         <li><a href="/">MENU</a></li>
         <li><a href="/contato">CONTATO</a></li>
@@ -27,6 +28,7 @@ function Home({ produtos, atualizarEstoque }) {
         <li><a href="/app">APP</a></li>
       </ul>
 
+      {/* 🔹 Lista de Produtos */}
       <div className="produtos-container">
         {produtos.map((p, i) => {
           const qtd = quantidades[p.nome] || 1;
@@ -56,7 +58,9 @@ function Home({ produtos, atualizarEstoque }) {
                 />
               </div>
 
-              <p className="total">Total: R$ {Number(total).toLocaleString("pt-BR")}</p>
+              <p className="total">
+                Total: R$ {Number(total).toLocaleString("pt-BR")}
+              </p>
 
               <button
                 className="comprar"
@@ -65,7 +69,9 @@ function Home({ produtos, atualizarEstoque }) {
                   navigate(
                     `/pagamento?valor=${total}&descricao=${encodeURIComponent(
                       `${p.nome} (x${qtd})`
-                    )}&imagem=${encodeURIComponent(p.imagem)}&quantidade=${qtd}`
+                    )}&imagem=${encodeURIComponent(
+                      p.imagem
+                    )}&quantidade=${qtd}`
                   )
                 }
               >
@@ -75,12 +81,21 @@ function Home({ produtos, atualizarEstoque }) {
           );
         })}
       </div>
+
+      {/* 🔹 Rodapé Profissional */}
+      <footer className="rodape">
+        <div className="rodape-conteudo">
+          <p>© {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos reservados.</p>
+          <p className="rodape-site">
+            Desenvolvido por <a href="https://w.app/joserogerio" target="_blank" rel="noreferrer">José Rogerio</a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
 
 function App() {
-  // 🧮 Agora o estoque é controlado globalmente
   const [produtos, setProdutos] = useState([
     { nome: "Fox", imagem: carro1, preco: 1.0, estoque: 0 },
     { nome: "Argo", imagem: carro2, preco: 1.0, estoque: 3 },
@@ -100,7 +115,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home produtos={produtos} atualizarEstoque={atualizarEstoque} />} />
+        <Route
+          path="/"
+          element={<Home produtos={produtos} atualizarEstoque={atualizarEstoque} />}
+        />
         <Route
           path="/pagamento"
           element={<Pagamento atualizarEstoque={atualizarEstoque} />}
@@ -111,4 +129,3 @@ function App() {
 }
 
 export default App;
-
