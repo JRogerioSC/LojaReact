@@ -31,12 +31,14 @@ function Home() {
             <img src={p.imagem} alt={p.nome} />
             <p className="preco">R$ {p.preco.toLocaleString("pt-BR")}</p>
 
-            {/* ✅ Botão corrigido: envia nome e valor para a rota /pagamento */}
+            {/* ✅ Envia nome, valor e imagem */}
             <button
               className="comprar"
               onClick={() =>
                 navigate(
-                  `/pagamento?valor=${p.preco}&descricao=${encodeURIComponent(p.nome)}`
+                  `/pagamento?valor=${p.preco}&descricao=${encodeURIComponent(
+                    p.nome
+                  )}&imagem=${encodeURIComponent(p.imagem)}`
                 )
               }
             >
@@ -61,4 +63,3 @@ function App() {
 }
 
 export default App;
-

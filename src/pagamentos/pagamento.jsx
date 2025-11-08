@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./pagamento.css";
 
 function Pagamento() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const params = new URLSearchParams(location.search);
+
+    const valorParam = params.get("valor") || "";
+    const descricaoParam = params.get("descricao") || "";
+    const imagemParam = params.get("imagem") || "";
+
     const [tipo, setTipo] = useState("pix");
-    const [valor, setValor] = useState("");
-    const [descricao, setDescricao] = useState("");
+    const [valor, setValor] = useState(valorParam);
+    const [descricao, setDescricao] = useState(descricaoParam);
+    const [imagem, setImagem] = useState(imagemParam);
     const [email, setEmail] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [qrBase64, setQrBase64] = useState("");
@@ -18,20 +27,7 @@ function Pagamento() {
     const [titular, setTitular] = useState("");
     const [mp, setMp] = useState(null);
 
-    const location = useLocation();
-
-    // 📦 Ao carregar a página, pegar valor e descrição da URL
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const valorParam = params.get("valor");
-        const descricaoParam = params.get("descricao");
-
-        if (valorParam) setValor(valorParam);
-        if (descricaoParam) setDescricao(descricaoParam);
-    }, [location.search]);
-
-    useEffect(() => {
-        // Inicializa SDK do Mercado Pago
         const mpInstance = new window.MercadoPago("APP_USR-c4a1f460-54a7-45c4-a883-df06f161aab2");
         setMp(mpInstance);
     }, []);
@@ -51,7 +47,6 @@ function Pagamento() {
                 url = "https://sevidorlojareact.onrender.com/api/pagar/pix";
                 body = { valor, descricao, email };
             } else {
-                // Cria token do cartão via SDK
                 const cardData = {
                     cardNumber: numero,
                     cardholderName: titular,
@@ -96,27 +91,24 @@ function Pagamento() {
 
     return (
         <div className="pagamento">
-            <h2>💳 Checkout - Mercado Pago</h2>
+            <button className="voltar" onClick={() => navigate("/")}>⬅ Voltar à Loja</button>
+
+            <h2>💳 Checkout Seguro</h2>
+
+            {imagem && (
+                <div className="produto-resumo">
+                    <img src={imagem} alt={descricao} className="imagem-produto" />
+                    <h3>{descricao}</h3>
+                    <p className="valor-produto">R$ {valor}</p>
+                </div>
+            )}
 
             <input
-                type="text"
-                placeholder="Descrição do produto"
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-                readOnly // 🔒 bloqueia edição (opcional)
-            />
-            <input
-                type="number"
-                placeholder="Valor (R$)"
-                value={valor}
-                onChange={(e) => setValor(e.target.value)}
-                readOnly // 🔒 bloqueia edição (opcional)
-            />
-            <input
                 type="email"
-                placeholder="E-mail do cliente"
+                placeholder="Digite seu e-mail para receber o comprovante"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="input-email"
             />
 
             <div className="tipos">
@@ -177,7 +169,7 @@ function Pagamento() {
                 </div>
             )}
 
-            <button onClick={gerarPagamento}>
+            <button className="btn-pagar" onClick={gerarPagamento}>
                 {tipo === "pix" ? "Gerar PIX" : "Pagar com Cartão"}
             </button>
 
@@ -199,3 +191,4 @@ function Pagamento() {
 }
 
 export default Pagamento;
+

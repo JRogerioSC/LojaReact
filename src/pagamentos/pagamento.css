@@ -29,3 +29,132 @@
     margin-bottom: 10px;
     text-align: center;
 }
+
+.produto-resumo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.imagem-produto {
+    width: 200px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #ccc;
+}
+
+.valor-produto {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2d7a2d;
+}
+
+
+
+.pagamento {
+    max-width: 420px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+}
+
+.voltar {
+    background: none;
+    border: none;
+    color: #0070f3;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.produto-resumo {
+    margin-bottom: 20px;
+}
+
+.imagem-produto {
+    width: 180px;
+    border-radius: 14px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.valor-produto {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #00a650;
+    margin-top: 5px;
+}
+
+.input-email,
+.cartao input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 10px;
+    border: 1px solid #d1d1d1;
+    border-radius: 10px;
+    outline: none;
+    transition: 0.3s;
+    font-size: 15px;
+}
+
+.input-email:focus,
+.cartao input:focus {
+    border-color: #0070f3;
+    box-shadow: 0 0 4px rgba(0, 112, 243, 0.3);
+}
+
+.tipos {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-weight: 600;
+}
+
+.duplo {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.btn-pagar {
+    width: 100%;
+    background: linear-gradient(90deg, #0070f3, #005ad6);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-pagar:hover {
+    background: linear-gradient(90deg, #005ad6, #0045b3);
+}
+
+.pix-area {
+    margin-top: 20px;
+}
+
+.qrcode {
+    width: 180px;
+    margin-top: 10px;
+}
+
+.pixtext {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+.mensagem {
+    margin-top: 15px;
+    font-weight: 600;
+}
