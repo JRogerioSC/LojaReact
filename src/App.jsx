@@ -11,11 +11,21 @@ function Home({ produtos, atualizarEstoque }) {
   const [quantidades, setQuantidades] = useState({});
 
   const handleQuantidadeChange = (nome, valor, estoque) => {
-    const qtd = Math.max(1, Math.min(Number(valor), estoque));
-    setQuantidades((prev) => ({
-      ...prev,
-      [nome]: qtd,
-    }));
+    // 🔹 Permitir digitação livre, mas validar se é número
+    const numero = Number(valor);
+    if (!isNaN(numero) && numero > 0) {
+      const qtd = Math.min(numero, estoque);
+      setQuantidades((prev) => ({
+        ...prev,
+        [nome]: qtd,
+      }));
+    } else if (valor === "") {
+      // Se o campo estiver vazio, não força valor
+      setQuantidades((prev) => ({
+        ...prev,
+        [nome]: "",
+      }));
+    }
   };
 
   return (
@@ -47,10 +57,9 @@ function Home({ produtos, atualizarEstoque }) {
               <div className="quantidade-container">
                 <label>Quantidade:</label>
                 <input
-                  type="number"
-                  min="1"
-                  max={p.estoque}
-                  value={qtd}
+                  type="text" // 👈 agora é texto
+                  placeholder="Digite"
+                  value={quantidades[p.nome] ?? ""}
                   onChange={(e) =>
                     handleQuantidadeChange(p.nome, e.target.value, p.estoque)
                   }
@@ -85,9 +94,19 @@ function Home({ produtos, atualizarEstoque }) {
       {/* 🔹 Rodapé Profissional */}
       <footer className="rodape">
         <div className="rodape-conteudo">
-          <p>© {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos reservados.</p>
+          <p>
+            © {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os
+            direitos reservados.
+          </p>
           <p className="rodape-site">
-            Desenvolvido por <a href="https://w.app/joserogerio" target="_blank" rel="noreferrer">José Rogerio</a>
+            Desenvolvido por{" "}
+            <a
+              href="https://w.app/joserogerio"
+              target="_blank"
+              rel="noreferrer"
+            >
+              José Rogerio
+            </a>
           </p>
         </div>
       </footer>
