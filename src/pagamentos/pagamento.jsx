@@ -28,7 +28,7 @@ function Pagamento() {
     const [mp, setMp] = useState(null);
 
     useEffect(() => {
-        const mpInstance = new window.MercadoPago("TEST-9f970731-cbee-4a81-9e7f-60313d40cca3");
+        const mpInstance = new window.MercadoPago("APP_USR-9d37f660-b501-4249-b815-c4f2577f8aef");
         setMp(mpInstance);
     }, []);
 
