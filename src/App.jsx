@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Pagamento from "./pagamentos/pagamento";
 import "./App.css";
-import carro1 from "./assets/carro1.png";
-import carro2 from "./assets/carro2.png";
-import carro3 from "./assets/carro3.png";
+import Açai from "./assets/Açai.jpg";
+import BandaDeFrango from "./assets/BandaDeFrango.jpg";
+import Espetinho from "./assets/Espetinho.jpg";
 
 function Home({ produtos, atualizarEstoque }) {
   const navigate = useNavigate();
@@ -57,10 +57,7 @@ function Home({ produtos, atualizarEstoque }) {
   return (
     <div className="home">
       <ul className="menu">
-        <li><a href="/">MENU</a></li>
-        <li><a href="/contato">CONTATO</a></li>
-        <li><a href="/sobre">SOBRE</a></li>
-        <li><a href="/app">APP</a></li>
+        <li><a href="https://lojareact.netlify.app/">🥣LojaReact 🍽</a></li>
       </ul>
 
       <div className="produtos-container">
@@ -151,9 +148,9 @@ function Home({ produtos, atualizarEstoque }) {
 
 function App() {
   const [produtos, setProdutos] = useState([
-    { nome: "Fox", imagem: carro1, preco: 1.0, estoque: 0 },
-    { nome: "Argo", imagem: carro2, preco: 1.0, estoque: 3 },
-    { nome: "Onix", imagem: carro3, preco: 1.0, estoque: 8 },
+    { nome: "Açai 1 Litro", imagem: Açai, preco: 1.0, estoque: 0 },
+    { nome: "Banda De Frango", imagem: BandaDeFrango, preco: 1.0, estoque: 3 },
+    { nome: "Espetinho", imagem: Espetinho, preco: 1.0, estoque: 8 },
   ]);
 
   const atualizarEstoque = (nomeProduto, quantidadeVendida) => {
