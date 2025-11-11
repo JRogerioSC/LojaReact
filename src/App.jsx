@@ -38,11 +38,9 @@ function Home({ produtos, atualizarEstoque }) {
     const total = (produtoSelecionado.preco * qtd).toFixed(2);
     const mensagem = `🛒 *Novo Pedido*\n\n👤 *Cliente:* ${formData.nome}\n📞 *Telefone:* ${formData.telefone}\n🏠 *Endereço:* ${formData.endereco}\n\n📦 *Produto:* ${produtoSelecionado.nome}\n🔢 *Quantidade:* ${qtd}\n💰 *Total:* R$ ${total}`;
 
-    // Substitua pelo número do vendedor com DDI (exemplo: 55 para Brasil)
-    const numeroVendedor = "5596991624580"; // 👉 coloque seu número do WhatsApp aqui
+    const numeroVendedor = "5596991624580"; // 👉 número do WhatsApp do vendedor
     const urlWhatsApp = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensagem)}`;
 
-    // Abre o WhatsApp e redireciona para pagamento
     window.open(urlWhatsApp, "_blank");
 
     navigate(
@@ -121,6 +119,22 @@ function Home({ produtos, atualizarEstoque }) {
               value={formData.endereco}
               onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
             />
+
+            {/* ⚠️ Lembrete abaixo do formulário */}
+            <p
+              style={{
+                backgroundColor: "#fff3cd",
+                color: "#856404",
+                border: "1px solid #ffeeba",
+                borderRadius: "8px",
+                padding: "10px",
+                marginTop: "10px",
+                fontSize: "0.9rem",
+              }}
+            >
+              ⚠️ <strong>Atenção:</strong> Após realizar o pagamento, envie o comprovante ao vendedor via WhatsApp para agilizar a confirmação do seu pedido.
+            </p>
+
             <div className="botoes">
               <button onClick={() => setFormAberto(false)}>Cancelar</button>
               <button className="concluir" onClick={handleEnviarWhatsApp}>
