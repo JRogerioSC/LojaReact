@@ -89,6 +89,23 @@ function Pagamento() {
         }
     };
 
+    // 🔧 BOTÃO DE TESTE - SIMULA PAGAMENTO APROVADO E ATUALIZA ESTOQUE
+    const simularAprovacao = async () => {
+        setMensagem("✅ Pagamento aprovado!");
+        try {
+            // chama sua API de estoque para reduzir a quantidade do produto
+            const res = await fetch("https://servidorestoque-1.onrender.com/api/estoque/atualizar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ produto: descricao, quantidadeVendida: 1 }),
+            });
+            const data = await res.json();
+            console.log("Estoque atualizado:", data);
+        } catch (err) {
+            console.error("Erro ao atualizar estoque:", err);
+        }
+    };
+
     return (
         <div className="pagamento">
             <button className="voltar" onClick={() => navigate("/")}>⬅ Voltar à Loja</button>
@@ -173,6 +190,11 @@ function Pagamento() {
                 {tipo === "pix" ? "Gerar PIX" : "Pagar com Cartão"}
             </button>
 
+            {/* 🔘 BOTÃO DE TESTE - PAGAMENTO APROVADO */}
+            <button className="btn-aprovado" onClick={simularAprovacao}>
+                ✅ PAGAMENTO APROVADO (TESTE)
+            </button>
+
             {qrBase64 && (
                 <div className="pix-area">
                     <img
@@ -191,4 +213,3 @@ function Pagamento() {
 }
 
 export default Pagamento;
-

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Pagamento from "./pagamentos/pagamento";
 import "./App.css";
 import Açai from "./assets/Açai.jpg";
 import BandaDeFrango from "./assets/BandaDeFrango.jpg";
 import Espetinho from "./assets/Espetinho.jpg";
+
+// 🔗 URL do servidor de estoque (mude quando publicar)
+const API_ESTOQUE = "https://servidorestoque-1.onrender.com/api/estoque";
 
 function Home({ produtos, atualizarEstoque }) {
   const navigate = useNavigate();
@@ -13,11 +16,10 @@ function Home({ produtos, atualizarEstoque }) {
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [formData, setFormData] = useState({ nome: "", telefone: "", endereco: "" });
 
-  const handleQuantidadeChange = (nome, valor, estoque) => {
+  const handleQuantidadeChange = (nome, valor) => {
     const numero = Number(valor);
     if (!isNaN(numero) && numero > 0) {
-      const qtd = Math.min(numero, estoque);
-      setQuantidades((prev) => ({ ...prev, [nome]: qtd }));
+      setQuantidades((prev) => ({ ...prev, [nome]: numero }));
     } else if (valor === "") {
       setQuantidades((prev) => ({ ...prev, [nome]: "" }));
     }
@@ -28,7 +30,7 @@ function Home({ produtos, atualizarEstoque }) {
     setFormAberto(true);
   };
 
-  const handleEnviarWhatsApp = () => {
+  const handleEnviarWhatsApp = async () => {
     if (!formData.nome || !formData.telefone || !formData.endereco) {
       alert("Por favor, preencha todos os campos antes de concluir.");
       return;
@@ -38,10 +40,23 @@ function Home({ produtos, atualizarEstoque }) {
     const total = (produtoSelecionado.preco * qtd).toFixed(2);
     const mensagem = `🛒 *Novo Pedido*\n\n👤 *Cliente:* ${formData.nome}\n📞 *Telefone:* ${formData.telefone}\n🏠 *Endereço:* ${formData.endereco}\n\n📦 *Produto:* ${produtoSelecionado.nome}\n🔢 *Quantidade:* ${qtd}\n💰 *Total:* R$ ${total}`;
 
-    const numeroVendedor = "5596991624580"; // 👉 número do WhatsApp do vendedor
+    const numeroVendedor = "5596991624580";
     const urlWhatsApp = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensagem)}`;
-
     window.open(urlWhatsApp, "_blank");
+
+    // 🔹 Atualiza o estoque no backend
+    try {
+      await fetch(`${API_ESTOQUE}/atualizar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: produtoSelecionado.id, quantidadeVendida: qtd })
+      });
+    } catch (erro) {
+      console.error("Erro ao atualizar estoque:", erro);
+    }
+
+    // 🔹 Atualiza no frontend
+    atualizarEstoque(produtoSelecionado.nome, qtd);
 
     navigate(
       `/pagamento?valor=${total}&descricao=${encodeURIComponent(
@@ -55,7 +70,7 @@ function Home({ produtos, atualizarEstoque }) {
   return (
     <div className="home">
       <ul className="menu">
-        <li><a href="https://lojareact.netlify.app/">🥣LojaReact 🍽</a></li>
+        <li><a href="/">🥣 LojaReact 🍽</a></li>
       </ul>
 
       <div className="produtos-container">
@@ -69,7 +84,8 @@ function Home({ produtos, atualizarEstoque }) {
               <img src={p.imagem} alt={p.nome} />
               <p className="preco">R$ {p.preco.toLocaleString("pt-BR")}</p>
               <p className="estoque">
-                🏷️ Estoque disponível: <strong>{p.estoque}</strong>
+                🏷️ Estoque disponível:{" "}
+                <strong>{p.quantidade > 0 ? p.quantidade : "Esgotado"}</strong>
               </p>
 
               <div className="quantidade-container">
@@ -78,7 +94,7 @@ function Home({ produtos, atualizarEstoque }) {
                   type="text"
                   placeholder="Digite"
                   value={quantidades[p.nome] ?? ""}
-                  onChange={(e) => handleQuantidadeChange(p.nome, e.target.value, p.estoque)}
+                  onChange={(e) => handleQuantidadeChange(p.nome, e.target.value)}
                   className="input-quantidade"
                 />
               </div>
@@ -87,17 +103,17 @@ function Home({ produtos, atualizarEstoque }) {
 
               <button
                 className="comprar"
-                disabled={p.estoque === 0}
+                disabled={p.quantidade === 0}
                 onClick={() => abrirFormulario(p)}
               >
-                {p.estoque === 0 ? "ESGOTADO" : "COMPRAR"}
+                {p.quantidade === 0 ? "ESGOTADO" : "COMPRAR"}
               </button>
             </div>
           );
         })}
       </div>
 
-      {/* 🔹 Modal de Formulário */}
+      {/* Modal de Formulário */}
       {formAberto && (
         <div className="modal-overlay">
           <div className="modal">
@@ -120,7 +136,6 @@ function Home({ produtos, atualizarEstoque }) {
               onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
             />
 
-            {/* ⚠️ Lembrete abaixo do formulário */}
             <p
               style={{
                 backgroundColor: "#fff3cd",
@@ -132,7 +147,7 @@ function Home({ produtos, atualizarEstoque }) {
                 fontSize: "0.9rem",
               }}
             >
-              ⚠️ <strong>Atenção:</strong> Após realizar o pagamento, envie o comprovante ao vendedor via WhatsApp para agilizar a confirmação do seu pedido.
+              ⚠️ <strong>Atenção:</strong> Após realizar o pagamento, envie o comprovante ao vendedor via WhatsApp.
             </p>
 
             <div className="botoes">
@@ -145,8 +160,7 @@ function Home({ produtos, atualizarEstoque }) {
         </div>
       )}
 
-
-      {/* 🔹 Botão Flutuante do WhatsApp com ícone oficial */}
+      {/* Botão Flutuante do WhatsApp */}
       <a
         href="https://wa.me/5596991624580"
         className="whatsapp-flutuante"
@@ -160,14 +174,13 @@ function Home({ produtos, atualizarEstoque }) {
         />
       </a>
 
-
       <footer className="rodape">
         <div className="rodape-conteudo">
           <p>© {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos reservados.</p>
           <p className="rodape-site">
             Desenvolvido por{" "}
             <a href="https://w.app/joserogerio" target="_blank" rel="noreferrer">
-              José Rogerio
+              José Rogério
             </a>
           </p>
         </div>
@@ -177,16 +190,32 @@ function Home({ produtos, atualizarEstoque }) {
 }
 
 function App() {
-  const [produtos, setProdutos] = useState([
-    { nome: "Açai 1 Litro", imagem: Açai, preco: 1.0, estoque: 0 },
-    { nome: "Banda De Frango", imagem: BandaDeFrango, preco: 1.0, estoque: 3 },
-    { nome: "Espetinho", imagem: Espetinho, preco: 1.0, estoque: 8 },
-  ]);
+  const [produtos, setProdutos] = useState([]);
 
+  // 🔹 Buscar estoque real do backend
+  useEffect(() => {
+    fetch(API_ESTOQUE)
+      .then(res => res.json())
+      .then(dados => {
+        const produtosComImagens = dados.map(p => {
+          let imagem = "";
+          if (p.nome.includes("Açai")) imagem = Açai;
+          else if (p.nome.includes("Banda")) imagem = BandaDeFrango;
+          else if (p.nome.includes("Espet")) imagem = Espetinho;
+          return { ...p, imagem };
+        });
+        setProdutos(produtosComImagens);
+      })
+      .catch(err => console.error("Erro ao carregar estoque:", err));
+  }, []);
+
+  // 🔹 Atualizar estoque local após venda
   const atualizarEstoque = (nomeProduto, quantidadeVendida) => {
-    setProdutos((prev) =>
-      prev.map((p) =>
-        p.nome === nomeProduto ? { ...p, estoque: Math.max(0, p.estoque - quantidadeVendida) } : p
+    setProdutos(prev =>
+      prev.map(p =>
+        p.nome === nomeProduto
+          ? { ...p, quantidade: Math.max(0, p.quantidade - quantidadeVendida) }
+          : p
       )
     );
   };
@@ -202,4 +231,5 @@ function App() {
 }
 
 export default App;
+
 
