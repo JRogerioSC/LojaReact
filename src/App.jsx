@@ -145,6 +145,22 @@ function Home({ produtos, atualizarEstoque }) {
         </div>
       )}
 
+
+      {/* 🔹 Botão Flutuante do WhatsApp com ícone oficial */}
+      <a
+        href="https://wa.me/5596991624580"
+        className="whatsapp-flutuante"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <img
+          src="https://i.postimg.cc/KYLwjGBp/whatsapp.png"
+          alt="WhatsApp"
+          className="icone-whatsapp"
+        />
+      </a>
+
+
       <footer className="rodape">
         <div className="rodape-conteudo">
           <p>© {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos reservados.</p>
@@ -186,3 +202,4 @@ function App() {
 }
 
 export default App;
+
