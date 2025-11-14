@@ -94,7 +94,7 @@ function Pagamento() {
         setMensagem("✅ Pagamento aprovado!");
         try {
             // chama sua API de estoque para reduzir a quantidade do produto
-            const res = await fetch("https://servidorestoque-1.onrender.com/api/estoque/atualizar", {
+            const res = await fetch("https://servidorestoque.onrender.com/api/estoque/atualizar", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ produto: descricao, quantidadeVendida: 1 }),
