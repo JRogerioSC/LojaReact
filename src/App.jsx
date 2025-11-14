@@ -193,6 +193,7 @@ function App() {
   const [produtos, setProdutos] = useState([]);
 
   // 🔹 Buscar estoque real do backend
+  // 🔹 Buscar estoque real do backend
   useEffect(() => {
     fetch(API_ESTOQUE)
       .then(res => res.json())
@@ -202,12 +203,18 @@ function App() {
           if (p.nome.includes("Açai")) imagem = Açai;
           else if (p.nome.includes("Banda")) imagem = BandaDeFrango;
           else if (p.nome.includes("Espet")) imagem = Espetinho;
-          return { ...p, imagem };
+
+          return {
+            ...p,
+            id: p._id,   // 🔥 CORREÇÃO ESSENCIAL PARA ATUALIZAR ESTOQUE
+            imagem
+          };
         });
         setProdutos(produtosComImagens);
       })
       .catch(err => console.error("Erro ao carregar estoque:", err));
   }, []);
+
 
   // 🔹 Atualizar estoque local após venda
   const atualizarEstoque = (nomeProduto, quantidadeVendida) => {
