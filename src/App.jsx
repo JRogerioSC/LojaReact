@@ -7,7 +7,7 @@ import BandaDeFrango from "./assets/BandaDeFrango.jpg";
 import Espetinho from "./assets/Espetinho.jpg";
 
 // 🔗 URL do servidor de estoque (mude quando publicar)
-const API_ESTOQUE = "https://servidorestoque-1.onrender.com/api/estoque";
+const API_ESTOQUE = "https://servidorestoque.onrender.com/api/estoque";
 
 function Home({ produtos, atualizarEstoque }) {
   const navigate = useNavigate();
