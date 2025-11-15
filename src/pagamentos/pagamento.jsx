@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import "./pagamento.css";
+
+const API_ESTOQUE = "https://servidorestoque.onrender.com/api/estoque";
 
 function Pagamento() {
     const location = useLocation();
     const navigate = useNavigate();
-    const params = new URLSearchParams(location.search);
 
-    const valorParam = params.get("valor") || "";
+    const params = new URLSearchParams(location.search);
+    const valorParam = Number(params.get("valor") || 0);
     const descricaoParam = params.get("descricao") || "";
     const imagemParam = params.get("imagem") || "";
-    const idParam = params.get("id");   // 🟢 PEGAR O ID DO PRODUTO
+    const idParam = params.get("id");
+    const quantidadeParam = Number(params.get("quantidade") || 1);
 
     const [tipo, setTipo] = useState("pix");
+    const [quantidadeFinal, setQuantidadeFinal] = useState(quantidadeParam);
     const [valor, setValor] = useState(valorParam);
     const [descricao, setDescricao] = useState(descricaoParam);
     const [imagem, setImagem] = useState(imagemParam);
@@ -26,16 +30,79 @@ function Pagamento() {
     const [expAno, setExpAno] = useState("");
     const [cvv, setCvv] = useState("");
     const [titular, setTitular] = useState("");
+
     const [mp, setMp] = useState(null);
 
+    // =====================================================
+    // Mercado Pago
+    // =====================================================
     useEffect(() => {
         const mpInstance = new window.MercadoPago("TEST-9f970731-cbee-4a81-9e7f-60313d40cca3");
         setMp(mpInstance);
     }, []);
 
+    // =====================================================
+    // 🔥 BUSCAR PRODUTO + VALIDAR QUANTIDADE
+    // =====================================================
+    useEffect(() => {
+        const validarQuantidade = async () => {
+            try {
+                const res = await fetch(`${API_ESTOQUE}/${idParam}`);
+                const produto = await res.json();
+
+                if (!produto || produto.erro) {
+                    setMensagem("❌ Produto não encontrado no estoque.");
+                    return;
+                }
+
+                if (quantidadeParam > produto.quantidade) {
+                    setQuantidadeFinal(produto.quantidade);
+                    setValor(produto.quantidade * (valorParam / quantidadeParam));
+                    setMensagem(`⚠️ Só temos ${produto.quantidade} unidades no estoque. Quantidade ajustada.`);
+                }
+            } catch (err) {
+                console.error(err);
+                setMensagem("❌ Erro ao validar estoque.");
+            }
+        };
+
+        validarQuantidade();
+    }, [idParam, quantidadeParam, valorParam]);
+
+
+    // =====================================================
+    // 🔥 DESCONTAR ESTOQUE
+    // =====================================================
+    const descontarEstoque = async () => {
+        try {
+            const res = await fetch(`${API_ESTOQUE}/confirma-pagamento`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: idParam,
+                    quantidadeVendida: quantidadeFinal
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.sucesso) {
+                setMensagem("🟢 Estoque atualizado!");
+            } else {
+                setMensagem("⚠️ " + data.erro);
+            }
+        } catch (err) {
+            console.error(err);
+            setMensagem("❌ Erro ao atualizar estoque.");
+        }
+    };
+
+    // =====================================================
+    // 🔥 GERAR PAGAMENTO
+    // =====================================================
     const gerarPagamento = async () => {
-        if (!valor || !descricao || !email) {
-            setMensagem("⚠️ Preencha todos os campos!");
+        if (!email) {
+            setMensagem("⚠️ Digite seu e-mail antes de pagar!");
             return;
         }
 
@@ -69,56 +136,44 @@ function Pagamento() {
 
             const data = await res.json();
 
+            // PIX
             if (tipo === "pix") {
                 if (data.qr_base64) {
                     setQrBase64(data.qr_base64);
                     setPixCode(data.qr_code);
-                    setMensagem("✅ PIX gerado com sucesso!");
+                    setMensagem("📲 Escaneie o QR Code para pagar!");
                 } else {
                     setMensagem("❌ Erro ao gerar PIX.");
                 }
-            } else {
+            }
+
+            // CARTÃO
+            else {
                 if (data.status === "approved") {
                     setMensagem("✅ Pagamento aprovado!");
+                    await descontarEstoque();
                 } else {
                     setMensagem(`💬 Status: ${data.status}`);
                 }
             }
+
         } catch (error) {
             console.error(error);
-            setMensagem("❌ Erro ao conectar com o servidor.");
+            setMensagem("❌ Erro ao conectar ao servidor.");
         }
     };
 
-    // 🔧 BOTÃO DE TESTE — AGORA FUNCIONANDO!
+    // =====================================================
+    // 🔥 SIMULAR APROVADO (DESCONTA ESTOQUE)
+    // =====================================================
     const simularAprovacao = async () => {
-        setMensagem("✅ Pagamento aprovado!");
-
-        try {
-            const res = await fetch("https://servidorestoque.onrender.com/api/estoque/confirma-pagamento", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    id: idParam,           // 🟢 AGORA ENVIA O ID
-                    quantidadeVendida: 1   // desconta 1 unidade
-                }),
-            });
-
-            const data = await res.json();
-            console.log("Estoque atualizado:", data);
-
-            if (data.sucesso) {
-                setMensagem("🟢 Estoque atualizado com sucesso!");
-            } else {
-                setMensagem("⚠️ " + data.erro);
-            }
-
-        } catch (err) {
-            console.error("Erro ao atualizar estoque:", err);
-            setMensagem("❌ Erro ao atualizar estoque.");
-        }
+        setMensagem("🧪 Simulando pagamento aprovado...");
+        await descontarEstoque();
     };
 
+    // =====================================================
+    // 🔥 RENDER
+    // =====================================================
     return (
         <div className="pagamento">
             <button className="voltar" onClick={() => navigate("/")}>⬅ Voltar à Loja</button>
@@ -129,13 +184,13 @@ function Pagamento() {
                 <div className="produto-resumo">
                     <img src={imagem} alt={descricao} className="imagem-produto" />
                     <h3>{descricao}</h3>
-                    <p className="valor-produto">R$ {valor}</p>
+                    <p className="valor-produto">R$ {valor.toFixed(2)}</p>
                 </div>
             )}
 
             <input
                 type="email"
-                placeholder="Digite seu e-mail para receber o comprovante"
+                placeholder="Digite seu e-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-email"
@@ -143,58 +198,24 @@ function Pagamento() {
 
             <div className="tipos">
                 <label>
-                    <input
-                        type="radio"
-                        value="pix"
-                        checked={tipo === "pix"}
-                        onChange={() => setTipo("pix")}
-                    />
+                    <input type="radio" value="pix" checked={tipo === "pix"} onChange={() => setTipo("pix")} />
                     PIX
                 </label>
                 <label>
-                    <input
-                        type="radio"
-                        value="cartao"
-                        checked={tipo === "cartao"}
-                        onChange={() => setTipo("cartao")}
-                    />
+                    <input type="radio" value="cartao" checked={tipo === "cartao"} onChange={() => setTipo("cartao")} />
                     Cartão
                 </label>
             </div>
 
             {tipo === "cartao" && (
                 <div className="cartao">
-                    <input
-                        type="text"
-                        placeholder="Número do cartão"
-                        value={numero}
-                        onChange={(e) => setNumero(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Nome do titular"
-                        value={titular}
-                        onChange={(e) => setTitular(e.target.value)}
-                    />
+                    <input type="text" placeholder="Número" value={numero} onChange={(e) => setNumero(e.target.value)} />
+                    <input type="text" placeholder="Titular" value={titular} onChange={(e) => setTitular(e.target.value)} />
+
                     <div className="duplo">
-                        <input
-                            type="text"
-                            placeholder="Mês"
-                            value={expMes}
-                            onChange={(e) => setExpMes(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Ano"
-                            value={expAno}
-                            onChange={(e) => setExpAno(e.target.value)}
-                        />
-                        <input
-                            type="text"
-                            placeholder="CVV"
-                            value={cvv}
-                            onChange={(e) => setCvv(e.target.value)}
-                        />
+                        <input type="text" placeholder="Mês" value={expMes} onChange={(e) => setExpMes(e.target.value)} />
+                        <input type="text" placeholder="Ano" value={expAno} onChange={(e) => setExpAno(e.target.value)} />
+                        <input type="text" placeholder="CVV" value={cvv} onChange={(e) => setCvv(e.target.value)} />
                     </div>
                 </div>
             )}
@@ -203,18 +224,13 @@ function Pagamento() {
                 {tipo === "pix" ? "Gerar PIX" : "Pagar com Cartão"}
             </button>
 
-            {/* 🔘 BOTÃO DE TESTE */}
             <button className="btn-aprovado" onClick={simularAprovacao}>
-                ✅ PAGAMENTO APROVADO (TESTE)
+                🟢 PAGAMENTO APROVADO (TESTE)
             </button>
 
             {qrBase64 && (
                 <div className="pix-area">
-                    <img
-                        src={`data:image/png;base64,${qrBase64}`}
-                        alt="QR Code PIX"
-                        className="qrcode"
-                    />
+                    <img src={`data:image/png;base64,${qrBase64}`} alt="QR Code PIX" className="qrcode" />
                     <p><strong>Código Copia e Cola:</strong></p>
                     <textarea readOnly value={pixCode} className="pixtext" />
                 </div>

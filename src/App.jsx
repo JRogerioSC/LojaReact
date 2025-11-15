@@ -45,18 +45,34 @@ function Home({ produtos, atualizarEstoque }) {
     window.open(urlWhatsApp, "_blank");
 
     // 🔹 Atualiza o estoque no backend
-    try {
-      await fetch(`${API_ESTOQUE}/atualizar`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: produtoSelecionado.id, quantidadeVendida: qtd })
-      });
-    } catch (erro) {
-      console.error("Erro ao atualizar estoque:", erro);
-    }
+    const handleEnviarWhatsApp = async () => {
+      if (!formData.nome || !formData.telefone || !formData.endereco) {
+        alert("Por favor, preencha todos os campos antes de concluir.");
+        return;
+      }
 
-    // 🔹 Atualiza no frontend
-    atualizarEstoque(produtoSelecionado.nome, qtd);
+      const qtd = quantidades[produtoSelecionado.nome] || 1;
+      const total = (produtoSelecionado.preco * qtd).toFixed(2);
+
+      const mensagem = `🛒 *Novo Pedido*\n\n👤 *Cliente:* ${formData.nome}\n📞 *Telefone:* ${formData.telefone}\n🏠 *Endereço:* ${formData.endereco}\n\n📦 *Produto:* ${produtoSelecionado.nome}\n🔢 *Quantidade:* ${qtd}\n💰 *Total:* R$ ${total}`;
+
+      const numeroVendedor = "5596991624580";
+      const urlWhatsApp = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensagem)}`;
+      window.open(urlWhatsApp, "_blank");
+
+      // ⚠️ NÃO DESCONTAR AQUI!
+      // ❌ NENHUM DESCONTO NO BACKEND
+      // ❌ NENHUM DESCONTO NO FRONTEND
+
+      navigate(
+        `/pagamento?valor=${total}&descricao=${encodeURIComponent(
+          `${produtoSelecionado.nome} (x${qtd})`
+        )}&imagem=${encodeURIComponent(produtoSelecionado.imagem)}&quantidade=${qtd}&id=${produtoSelecionado.id}`
+      );
+
+      setFormAberto(false);
+    };
+
 
     navigate(
       `/pagamento?valor=${total}&descricao=${encodeURIComponent(
