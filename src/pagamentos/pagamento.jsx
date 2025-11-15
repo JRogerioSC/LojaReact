@@ -10,6 +10,7 @@ function Pagamento() {
     const valorParam = params.get("valor") || "";
     const descricaoParam = params.get("descricao") || "";
     const imagemParam = params.get("imagem") || "";
+    const idParam = params.get("id");   // 🟢 PEGAR O ID DO PRODUTO
 
     const [tipo, setTipo] = useState("pix");
     const [valor, setValor] = useState(valorParam);
@@ -89,20 +90,32 @@ function Pagamento() {
         }
     };
 
-    // 🔧 BOTÃO DE TESTE - SIMULA PAGAMENTO APROVADO E ATUALIZA ESTOQUE
+    // 🔧 BOTÃO DE TESTE — AGORA FUNCIONANDO!
     const simularAprovacao = async () => {
         setMensagem("✅ Pagamento aprovado!");
+
         try {
-            // chama sua API de estoque para reduzir a quantidade do produto
-            const res = await fetch("https://servidorestoque.onrender.com/api/estoque/atualizar", {
+            const res = await fetch("https://servidorestoque.onrender.com/api/estoque/confirma-pagamento", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ produto: descricao, quantidadeVendida: 1 }),
+                body: JSON.stringify({
+                    id: idParam,           // 🟢 AGORA ENVIA O ID
+                    quantidadeVendida: 1   // desconta 1 unidade
+                }),
             });
+
             const data = await res.json();
             console.log("Estoque atualizado:", data);
+
+            if (data.sucesso) {
+                setMensagem("🟢 Estoque atualizado com sucesso!");
+            } else {
+                setMensagem("⚠️ " + data.erro);
+            }
+
         } catch (err) {
             console.error("Erro ao atualizar estoque:", err);
+            setMensagem("❌ Erro ao atualizar estoque.");
         }
     };
 
@@ -190,7 +203,7 @@ function Pagamento() {
                 {tipo === "pix" ? "Gerar PIX" : "Pagar com Cartão"}
             </button>
 
-            {/* 🔘 BOTÃO DE TESTE - PAGAMENTO APROVADO */}
+            {/* 🔘 BOTÃO DE TESTE */}
             <button className="btn-aprovado" onClick={simularAprovacao}>
                 ✅ PAGAMENTO APROVADO (TESTE)
             </button>

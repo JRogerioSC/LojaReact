@@ -61,8 +61,9 @@ function Home({ produtos, atualizarEstoque }) {
     navigate(
       `/pagamento?valor=${total}&descricao=${encodeURIComponent(
         `${produtoSelecionado.nome} (x${qtd})`
-      )}&imagem=${encodeURIComponent(produtoSelecionado.imagem)}&quantidade=${qtd}`
+      )}&imagem=${encodeURIComponent(produtoSelecionado.imagem)}&quantidade=${qtd}&id=${produtoSelecionado.id}`
     );
+
 
     setFormAberto(false);
   };
