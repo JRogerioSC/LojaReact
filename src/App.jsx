@@ -16,13 +16,29 @@ function Home({ produtos, atualizarEstoque }) {
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [formData, setFormData] = useState({ nome: "", telefone: "", endereco: "" });
 
-  const handleQuantidadeChange = (nome, valor) => {
-    const numero = Number(valor);
-    if (!isNaN(numero) && numero > 0) {
-      setQuantidades((prev) => ({ ...prev, [nome]: numero }));
-    } else if (valor === "") {
+  // ✅ CORREÇÃO – QUANTIDADE NÃO ULTRAPASSA O ESTOQUE
+  const handleQuantidadeChange = (nome, valorDigitado) => {
+    const numero = Number(valorDigitado);
+    const produto = produtos.find((p) => p.nome === nome);
+
+    if (!produto) return;
+
+    if (valorDigitado === "") {
       setQuantidades((prev) => ({ ...prev, [nome]: "" }));
+      return;
     }
+
+    if (isNaN(numero) || numero < 1) {
+      setQuantidades((prev) => ({ ...prev, [nome]: 1 }));
+      return;
+    }
+
+    if (numero > produto.quantidade) {
+      setQuantidades((prev) => ({ ...prev, [nome]: produto.quantidade }));
+      return;
+    }
+
+    setQuantidades((prev) => ({ ...prev, [nome]: numero }));
   };
 
   const abrirFormulario = (produto) => {
@@ -30,6 +46,7 @@ function Home({ produtos, atualizarEstoque }) {
     setFormAberto(true);
   };
 
+  // 🔥 CONCERTADO – NÃO EXISTE MAIS FUNÇÃO DUPLICADA
   const handleEnviarWhatsApp = async () => {
     if (!formData.nome || !formData.telefone || !formData.endereco) {
       alert("Por favor, preencha todos os campos antes de concluir.");
@@ -38,48 +55,20 @@ function Home({ produtos, atualizarEstoque }) {
 
     const qtd = quantidades[produtoSelecionado.nome] || 1;
     const total = (produtoSelecionado.preco * qtd).toFixed(2);
+
     const mensagem = `🛒 *Novo Pedido*\n\n👤 *Cliente:* ${formData.nome}\n📞 *Telefone:* ${formData.telefone}\n🏠 *Endereço:* ${formData.endereco}\n\n📦 *Produto:* ${produtoSelecionado.nome}\n🔢 *Quantidade:* ${qtd}\n💰 *Total:* R$ ${total}`;
 
     const numeroVendedor = "5596991624580";
     const urlWhatsApp = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensagem)}`;
     window.open(urlWhatsApp, "_blank");
 
-    // 🔹 Atualiza o estoque no backend
-    const handleEnviarWhatsApp = async () => {
-      if (!formData.nome || !formData.telefone || !formData.endereco) {
-        alert("Por favor, preencha todos os campos antes de concluir.");
-        return;
-      }
-
-      const qtd = quantidades[produtoSelecionado.nome] || 1;
-      const total = (produtoSelecionado.preco * qtd).toFixed(2);
-
-      const mensagem = `🛒 *Novo Pedido*\n\n👤 *Cliente:* ${formData.nome}\n📞 *Telefone:* ${formData.telefone}\n🏠 *Endereço:* ${formData.endereco}\n\n📦 *Produto:* ${produtoSelecionado.nome}\n🔢 *Quantidade:* ${qtd}\n💰 *Total:* R$ ${total}`;
-
-      const numeroVendedor = "5596991624580";
-      const urlWhatsApp = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensagem)}`;
-      window.open(urlWhatsApp, "_blank");
-
-      // ⚠️ NÃO DESCONTAR AQUI!
-      // ❌ NENHUM DESCONTO NO BACKEND
-      // ❌ NENHUM DESCONTO NO FRONTEND
-
-      navigate(
-        `/pagamento?valor=${total}&descricao=${encodeURIComponent(
-          `${produtoSelecionado.nome} (x${qtd})`
-        )}&imagem=${encodeURIComponent(produtoSelecionado.imagem)}&quantidade=${qtd}&id=${produtoSelecionado.id}`
-      );
-
-      setFormAberto(false);
-    };
-
-
+    // 👉 Nenhum desconto de estoque aqui (somente após pagamento)
     navigate(
       `/pagamento?valor=${total}&descricao=${encodeURIComponent(
         `${produtoSelecionado.nome} (x${qtd})`
-      )}&imagem=${encodeURIComponent(produtoSelecionado.imagem)}&quantidade=${qtd}&id=${produtoSelecionado.id}`
+      )}&imagem=${encodeURIComponent(produtoSelecionado.imagem)}&quantidade=${qtd}&id=${produtoSelecionado.id
+      }`
     );
-
 
     setFormAberto(false);
   };
@@ -87,7 +76,9 @@ function Home({ produtos, atualizarEstoque }) {
   return (
     <div className="home">
       <ul className="menu">
-        <li><a href="/">🥣 LojaReact 🍽</a></li>
+        <li>
+          <a href="/">🥣 LojaReact 🍽</a>
+        </li>
       </ul>
 
       <div className="produtos-container">
@@ -100,6 +91,7 @@ function Home({ produtos, atualizarEstoque }) {
               <h3>{p.nome}</h3>
               <img src={p.imagem} alt={p.nome} />
               <p className="preco">R$ {p.preco.toLocaleString("pt-BR")}</p>
+
               <p className="estoque">
                 🏷️ Estoque disponível:{" "}
                 <strong>{p.quantidade > 0 ? p.quantidade : "Esgotado"}</strong>
@@ -130,23 +122,26 @@ function Home({ produtos, atualizarEstoque }) {
         })}
       </div>
 
-      {/* Modal de Formulário */}
+      {/* Modal Formulário */}
       {formAberto && (
         <div className="modal-overlay">
           <div className="modal">
             <h2>📝 Dados do Cliente</h2>
+
             <input
               type="text"
               placeholder="Nome completo"
               value={formData.nome}
               onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
             />
+
             <input
               type="tel"
               placeholder="Telefone (com DDD)"
               value={formData.telefone}
               onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
             />
+
             <textarea
               placeholder="Endereço completo"
               value={formData.endereco}
@@ -164,7 +159,8 @@ function Home({ produtos, atualizarEstoque }) {
                 fontSize: "0.9rem",
               }}
             >
-              ⚠️ <strong>Atenção:</strong> Após realizar o pagamento, envie o comprovante ao vendedor via WhatsApp.
+              ⚠️ <strong>Atenção:</strong> Após realizar o pagamento, envie o comprovante ao
+              vendedor via WhatsApp.
             </p>
 
             <div className="botoes">
@@ -177,7 +173,7 @@ function Home({ produtos, atualizarEstoque }) {
         </div>
       )}
 
-      {/* Botão Flutuante do WhatsApp */}
+      {/* Botão WhatsApp */}
       <a
         href="https://wa.me/5596991624580"
         className="whatsapp-flutuante"
@@ -193,7 +189,9 @@ function Home({ produtos, atualizarEstoque }) {
 
       <footer className="rodape">
         <div className="rodape-conteudo">
-          <p>© {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos reservados.</p>
+          <p>
+            © {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos reservados.
+          </p>
           <p className="rodape-site">
             Desenvolvido por{" "}
             <a href="https://w.app/joserogerio" target="_blank" rel="noreferrer">
@@ -210,12 +208,11 @@ function App() {
   const [produtos, setProdutos] = useState([]);
 
   // 🔹 Buscar estoque real do backend
-  // 🔹 Buscar estoque real do backend
   useEffect(() => {
     fetch(API_ESTOQUE)
-      .then(res => res.json())
-      .then(dados => {
-        const produtosComImagens = dados.map(p => {
+      .then((res) => res.json())
+      .then((dados) => {
+        const produtosComImagens = dados.map((p) => {
           let imagem = "";
           if (p.nome.includes("Açai")) imagem = Açai;
           else if (p.nome.includes("Banda")) imagem = BandaDeFrango;
@@ -223,20 +220,20 @@ function App() {
 
           return {
             ...p,
-            id: p._id,   // 🔥 CORREÇÃO ESSENCIAL PARA ATUALIZAR ESTOQUE
-            imagem
+            id: p._id, // IMPORTANTE
+            imagem,
           };
         });
+
         setProdutos(produtosComImagens);
       })
-      .catch(err => console.error("Erro ao carregar estoque:", err));
+      .catch((err) => console.error("Erro ao carregar estoque:", err));
   }, []);
 
-
-  // 🔹 Atualizar estoque local após venda
+  // 🔹 Atualizar estoque local
   const atualizarEstoque = (nomeProduto, quantidadeVendida) => {
-    setProdutos(prev =>
-      prev.map(p =>
+    setProdutos((prev) =>
+      prev.map((p) =>
         p.nome === nomeProduto
           ? { ...p, quantidade: Math.max(0, p.quantidade - quantidadeVendida) }
           : p
@@ -255,5 +252,6 @@ function App() {
 }
 
 export default App;
+
 
 
