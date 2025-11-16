@@ -194,7 +194,7 @@ function Home({ produtos, atualizarEstoque }) {
           </p>
           <p className="rodape-site">
             Desenvolvido por{" "}
-            <a href="https://w.app/joserogerio" target="_blank" rel="noreferrer">
+            <a href="https://wa.me/5596991624580" target="_blank" rel="noreferrer">
               José Rogério
             </a>
           </p>
