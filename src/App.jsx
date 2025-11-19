@@ -5,7 +5,6 @@ import "./App.css";
 import Açai from "./assets/Açai.jpg";
 import BandaDeFrango from "./assets/BandaDeFrango.jpg";
 import Espetinho from "./assets/Espetinho.jpg";
-import Carro from "./assets/1site.jpg";
 
 // 🔗 URL do servidor de estoque (mude quando publicar)
 const API_ESTOQUE = "https://servidorestoque.onrender.com/api/estoque";
