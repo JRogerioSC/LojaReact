@@ -46,7 +46,6 @@ function Home({ produtos, atualizarEstoque }) {
     setFormAberto(true);
   };
 
-  // 🔥 CONCERTADO – NÃO EXISTE MAIS FUNÇÃO DUPLICADA
   const handleEnviarWhatsApp = async () => {
     if (!formData.nome || !formData.telefone || !formData.endereco) {
       alert("Por favor, preencha todos os campos antes de concluir.");
@@ -62,7 +61,6 @@ function Home({ produtos, atualizarEstoque }) {
     const urlWhatsApp = `https://wa.me/${numeroVendedor}?text=${encodeURIComponent(mensagem)}`;
     window.open(urlWhatsApp, "_blank");
 
-    // 👉 Nenhum desconto de estoque aqui (somente após pagamento)
     navigate(
       `/pagamento?valor=${total}&descricao=${encodeURIComponent(
         `${produtoSelecionado.nome} (x${qtd})`
@@ -213,14 +211,19 @@ function App() {
       .then((res) => res.json())
       .then((dados) => {
         const produtosComImagens = dados.map((p) => {
-          let imagem = "";
-          if (p.nome.includes("Açai")) imagem = Açai;
-          else if (p.nome.includes("Banda")) imagem = BandaDeFrango;
-          else if (p.nome.includes("Espet")) imagem = Espetinho;
+          // ✔ Usa imagem real do Cloudinary
+          let imagem = p.imagem;
+
+          // ✔ Se não existir imagem no banco, usa imagem local antiga
+          if (!imagem || imagem.trim() === "") {
+            if (p.nome.includes("Açai")) imagem = Açai;
+            else if (p.nome.includes("Banda")) imagem = BandaDeFrango;
+            else if (p.nome.includes("Espet")) imagem = Espetinho;
+          }
 
           return {
             ...p,
-            id: p._id, // IMPORTANTE
+            id: p._id,
             imagem,
           };
         });
@@ -244,7 +247,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home produtos={produtos} atualizarEstoque={atualizarEstoque} />} />
+        <Route
+          path="/"
+          element={<Home produtos={produtos} atualizarEstoque={atualizarEstoque} />}
+        />
         <Route path="/pagamento" element={<Pagamento atualizarEstoque={atualizarEstoque} />} />
       </Routes>
     </BrowserRouter>
