@@ -16,7 +16,24 @@ function Home({ produtos, atualizarEstoque }) {
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [formData, setFormData] = useState({ nome: "", telefone: "", endereco: "" });
 
-  // ✅ CORREÇÃO – QUANTIDADE NÃO ULTRAPASSA O ESTOQUE
+  // 🔥 STATES DO BOTÃO ADM
+  const [admModal, setAdmModal] = useState(false);
+  const [senhaADM, setSenhaADM] = useState("");
+
+  // 🔥 Função que valida senha
+  const validarSenhaADM = () => {
+    const senhaCorreta = "689033rogerio"; // ALTERE AQUI
+
+    if (senhaADM === senhaCorreta) {
+      window.location.href = "https://painelprodutoslojareact.netlify.app/"; // SUA URL DO PAINEL
+    } else {
+      alert("❌ Senha incorreta!");
+    }
+  };
+
+  // ================================
+  // |     CONTROLE DE QUANTIDADE   |
+  // ================================
   const handleQuantidadeChange = (nome, valorDigitado) => {
     const numero = Number(valorDigitado);
     const produto = produtos.find((p) => p.nome === nome);
@@ -120,7 +137,9 @@ function Home({ produtos, atualizarEstoque }) {
         })}
       </div>
 
-      {/* Modal Formulário */}
+      {/* ==================== */}
+      {/*   MODAL DO CLIENTE   */}
+      {/* ==================== */}
       {formAberto && (
         <div className="modal-overlay">
           <div className="modal">
@@ -171,6 +190,107 @@ function Home({ produtos, atualizarEstoque }) {
         </div>
       )}
 
+      {/* ====================== */}
+      {/*   BOTÃO ADM + MODAL    */}
+      {/* ====================== */}
+      <button
+        className="botao-adm"
+        onClick={() => setAdmModal(true)}
+        style={{
+          position: "fixed",
+          bottom: "90px",
+          right: "20px",
+          background: "black",
+          color: "white",
+          padding: "12px 18px",
+          borderRadius: "50px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          border: "none",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+          zIndex: 9999,
+        }}
+      >
+        ADM
+      </button>
+
+      {admModal && (
+        <div
+          className="modal-adm-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(11, 12, 11, 0.6)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 99999,
+          }}
+        >
+          <div
+            className="modal-adm"
+            style={{
+              background: "white",
+              padding: "25px",
+              width: "300px",
+              borderRadius: "12px",
+              textAlign: "center",
+            }}
+          >
+            <h3>Senha do Administrador</h3>
+
+            <input
+              type="password"
+              placeholder="Digite a senha"
+              value={senhaADM}
+              onChange={(e) => setSenhaADM(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "15px",
+                borderRadius: "8px",
+                border: "1px solid #aaa",
+              }}
+            />
+
+            <button
+              onClick={validarSenhaADM}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "15px",
+                borderRadius: "8px",
+                border: "none",
+                background: "#222",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Entrar
+            </button>
+
+            <button
+              onClick={() => setAdmModal(false)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "10px",
+                borderRadius: "8px",
+                border: "none",
+                background: "#777",
+                color: "white",
+                cursor: "pointer",
+              }}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Botão WhatsApp */}
       <a
         href="https://wa.me/5596991624580"
@@ -188,7 +308,8 @@ function Home({ produtos, atualizarEstoque }) {
       <footer className="rodape">
         <div className="rodape-conteudo">
           <p>
-            © {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos reservados.
+            © {new Date().getFullYear()} <strong>LojaReact</strong> — Todos os direitos
+            reservados.
           </p>
           <p className="rodape-site">
             Desenvolvido por{" "}
@@ -205,16 +326,13 @@ function Home({ produtos, atualizarEstoque }) {
 function App() {
   const [produtos, setProdutos] = useState([]);
 
-  // 🔹 Buscar estoque real do backend
   useEffect(() => {
     fetch(API_ESTOQUE)
       .then((res) => res.json())
       .then((dados) => {
         const produtosComImagens = dados.map((p) => {
-          // ✔ Usa imagem real do Cloudinary
           let imagem = p.imagem;
 
-          // ✔ Se não existir imagem no banco, usa imagem local antiga
           if (!imagem || imagem.trim() === "") {
             if (p.nome.includes("Açai")) imagem = Açai;
             else if (p.nome.includes("Banda")) imagem = BandaDeFrango;
@@ -233,7 +351,6 @@ function App() {
       .catch((err) => console.error("Erro ao carregar estoque:", err));
   }, []);
 
-  // 🔹 Atualizar estoque local
   const atualizarEstoque = (nomeProduto, quantidadeVendida) => {
     setProdutos((prev) =>
       prev.map((p) =>
