@@ -9,7 +9,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #f2f2f2;
+    background: #f3ebeb;
     color: #222;
 }
 
@@ -42,6 +42,7 @@ body {
 ========================= */
 .produtos-container {
     display: flex;
+    border-radius: 10px;
     justify-content: center;
     flex-wrap: wrap;
     gap: 2rem;
@@ -67,6 +68,7 @@ body {
     width: 220px;
     height: 140px;
     object-fit: contain;
+    border-radius: 10px;
 }
 
 .preco {

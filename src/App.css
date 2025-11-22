@@ -1,6 +1,6 @@
 body {
     font-family: "Poppins", sans-serif;
-    background: #e6d8d8;
+    background: #948989;
     margin: 0;
 }
 
@@ -42,6 +42,7 @@ body {
     width: 200px;
     height: 130px;
     object-fit: contain;
+    border-radius: 10px;
 }
 
 .preco {
