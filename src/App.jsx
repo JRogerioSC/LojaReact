@@ -314,7 +314,7 @@ function Home({ produtos, atualizarEstoque }) {
           <p className="rodape-site">
             Desenvolvido por{" "}
             <a href="https://wa.me/5596991624580" target="_blank" rel="noreferrer">
-              José Rogério
+              【J】
             </a>
           </p>
         </div>
