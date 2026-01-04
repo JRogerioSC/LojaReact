@@ -234,3 +234,26 @@ body {
         width: 95%;
     }
 }
+
+/* 🔐 BOTÃO ADM */
+.botao-adm {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.botao-adm:hover {
+    background: #007bff;
+    transform: scale(1.1);
+}
