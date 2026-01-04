@@ -12,9 +12,9 @@ import Espetinho from "./assets/Espetinho.jpg";
 const API_ESTOQUE = "https://servidorestoque.onrender.com/api/estoque";
 const SOCKET_URL = "https://servidorestoque.onrender.com";
 
-// 🔌 SOCKET GLOBAL
+// 🔌 SOCKET (CORRETO PARA RENDER)
 const socket = io(SOCKET_URL, {
-  transports: ["websocket"],
+  transports: ["polling", "websocket"],
   reconnection: true,
 });
 
@@ -43,7 +43,7 @@ function Home({ produtos }) {
     }
   };
 
-  // 🔄 AJUSTA QUANTIDADE SE ESTOQUE ATUALIZAR
+  // 🔄 AJUSTA QUANTIDADE QUANDO ESTOQUE MUDA
   useEffect(() => {
     setQuantidades((prev) => {
       const novo = { ...prev };
@@ -106,12 +106,6 @@ function Home({ produtos }) {
 
     const qtd = quantidades[produtoSelecionado.nome] || 1;
     const total = (produtoSelecionado.preco * qtd).toFixed(2);
-
-    // 🔴 EMITE COMPRA PARA O BACKEND
-    socket.emit("realizarCompra", {
-      produtoId: produtoSelecionado.id,
-      quantidade: qtd,
-    });
 
     const mensagem = `🛒 *Novo Pedido*
 
@@ -222,10 +216,6 @@ function Home({ produtos }) {
               }
             />
 
-            <p className="aviso-pagamento">
-              ⚠️ Após o pagamento, envie o comprovante via WhatsApp.
-            </p>
-
             <div className="botoes">
               <button onClick={() => setFormAberto(false)}>Cancelar</button>
               <button className="concluir" onClick={handleEnviarWhatsApp}>
@@ -284,9 +274,15 @@ function Home({ produtos }) {
 function App() {
   const [produtos, setProdutos] = useState([]);
 
-  // 🔄 SOCKET → ATUALIZA ESTOQUE
+  // ✅ LOGS + ATUALIZAÇÃO EM TEMPO REAL
   useEffect(() => {
+    socket.on("connect", () => {
+      console.log("🟢 Socket conectado:", socket.id);
+    });
+
     socket.on("estoqueAtualizado", (produtoAtualizado) => {
+      console.log("📦 Estoque atualizado:", produtoAtualizado);
+
       setProdutos((prev) =>
         prev.map((p) =>
           p.id === produtoAtualizado._id
@@ -296,7 +292,15 @@ function App() {
       );
     });
 
-    return () => socket.off("estoqueAtualizado");
+    socket.on("disconnect", () => {
+      console.log("🔴 Socket desconectado");
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("estoqueAtualizado");
+      socket.off("disconnect");
+    };
   }, []);
 
   // 📦 BUSCA INICIAL
@@ -331,4 +335,5 @@ function App() {
 }
 
 export default App;
+
 
