@@ -158,6 +158,10 @@ function Home({ produtos }) {
               onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
             />
 
+            <p className="observacao-pagamento">
+              Envie o comprovante de pagamento ao vendedor para agilizar a entrega.
+            </p>
+
             <div className="botoes">
               <button onClick={() => setFormAberto(false)}>Cancelar</button>
               <button className="concluir" onClick={handleEnviarWhatsApp}>

@@ -257,3 +257,11 @@ body {
     background: #007bff;
     transform: scale(1.1);
 }
+
+.observacao-pagamento {
+    background-color: #66f506;
+    border-radius: 10px;
+    margin-top: 6px;
+    font-size: 18px;
+    color: #0b07f7;
+}
