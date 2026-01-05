@@ -99,7 +99,10 @@ function Home({ produtos }) {
           return (
             <div key={p.id} className="produto">
               <h3>{p.nome}</h3>
-              <img src={p.imagem} alt={p.nome} />
+              <div className="produto-img">
+                <img src={p.imagem} alt={p.nome} />
+              </div>
+
 
               <p className="preco">R$ {p.preco.toLocaleString("pt-BR")}</p>
 
