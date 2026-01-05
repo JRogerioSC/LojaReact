@@ -8,11 +8,9 @@ import Açai from "./assets/Açai.jpg";
 import BandaDeFrango from "./assets/BandaDeFrango.jpg";
 import Espetinho from "./assets/Espetinho.jpg";
 
-// 🔗 API + SOCKET
 const API_ESTOQUE = "https://servidorestoque.onrender.com/api/estoque";
 const SOCKET_URL = "https://servidorestoque.onrender.com";
 
-// ================= SOCKET INSTANCE =================
 const socket = io(SOCKET_URL, {
   transports: ["websocket"],
   reconnection: true,
@@ -42,7 +40,12 @@ function Home({ produtos }) {
     const produto = produtos.find((p) => p.nome === nome);
     if (!produto) return;
 
-    if (!valor || isNaN(num) || num < 1) {
+    if (valor === "") {
+      setQuantidades((p) => ({ ...p, [nome]: "" }));
+      return;
+    }
+
+    if (isNaN(num) || num < 1) {
       setQuantidades((p) => ({ ...p, [nome]: 1 }));
       return;
     }
@@ -59,60 +62,110 @@ function Home({ produtos }) {
   };
 
   const handleEnviarWhatsApp = () => {
+    if (!formData.nome || !formData.telefone || !formData.endereco) {
+      alert("Preencha todos os campos");
+      return;
+    }
+
     const qtd = quantidades[produtoSelecionado.nome] || 1;
     const total = (produtoSelecionado.preco * qtd).toFixed(2);
 
-    const msg = `🛒 Novo Pedido\n\nProduto: ${produtoSelecionado.nome}\nQtd: ${qtd}\nTotal: R$ ${total}`;
+    const msg = `🛒 Novo Pedido\n\n👤 ${formData.nome}\n📞 ${formData.telefone}\n🏠 ${formData.endereco}\n\n📦 ${produtoSelecionado.nome}\nQtd: ${qtd}\n💰 Total: R$ ${total}`;
+
     window.open(
       `https://wa.me/5596991624580?text=${encodeURIComponent(msg)}`,
       "_blank"
     );
 
-    navigate(
-      `/pagamento?valor=${total}&id=${produtoSelecionado.id}&quantidade=${qtd}`
-    );
-
+    navigate(`/pagamento?valor=${total}&id=${produtoSelecionado.id}&quantidade=${qtd}`);
     setFormAberto(false);
   };
 
   return (
     <div className="home">
+      {/* MENU */}
+      <ul className="menu">
+        <li>
+          <a href="/">🥣 LojaReact 🍽</a>
+        </li>
+      </ul>
+
+      {/* PRODUTOS */}
       <div className="produtos-container">
-        {produtos.map((p) => (
-          <div key={p.id} className="produto">
-            <h3>{p.nome}</h3>
-            <img src={p.imagem} alt={p.nome} />
+        {produtos.map((p) => {
+          const qtd = quantidades[p.nome] || 1;
+          const total = (p.preco * qtd).toFixed(2);
 
-            <p>💰 R$ {p.preco}</p>
-            <p>📦 Estoque: <strong>{p.quantidade}</strong></p>
+          return (
+            <div key={p.id} className="produto">
+              <h3>{p.nome}</h3>
+              <img src={p.imagem} alt={p.nome} />
 
-            <input
-              type="number"
-              min="1"
-              value={quantidades[p.nome] || 1}
-              onChange={(e) => handleQuantidadeChange(p.nome, e.target.value)}
-            />
+              <p className="preco">R$ {p.preco.toLocaleString("pt-BR")}</p>
 
-            <button
-              disabled={p.quantidade === 0}
-              onClick={() => abrirFormulario(p)}
-            >
-              {p.quantidade === 0 ? "ESGOTADO" : "COMPRAR"}
-            </button>
-          </div>
-        ))}
+              <p className="estoque">
+                Estoque disponível: <strong>{p.quantidade}</strong>
+              </p>
+
+              <div className="quantidade-container">
+                <label>Qtd:</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Digite"
+                  value={quantidades[p.nome] ?? ""}
+                  onChange={(e) => handleQuantidadeChange(p.nome, e.target.value)}
+                  className="input-quantidade"
+                />
+              </div>
+
+              <p className="total">Total: R$ {Number(total).toLocaleString("pt-BR")}</p>
+
+              <button
+                className="comprar"
+                disabled={p.quantidade === 0}
+                onClick={() => abrirFormulario(p)}
+              >
+                {p.quantidade === 0 ? "ESGOTADO" : "COMPRAR"}
+              </button>
+            </div>
+          );
+        })}
       </div>
 
+      {/* MODAL */}
       {formAberto && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>Confirmar pedido</h3>
-            <button onClick={handleEnviarWhatsApp}>Confirmar</button>
-            <button onClick={() => setFormAberto(false)}>Cancelar</button>
+            <h2>Dados do Cliente</h2>
+
+            <input
+              placeholder="Nome"
+              value={formData.nome}
+              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+            />
+            <input
+              placeholder="Telefone"
+              value={formData.telefone}
+              onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+            />
+            <textarea
+              placeholder="Endereço"
+              value={formData.endereco}
+              onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
+            />
+
+            <div className="botoes">
+              <button onClick={() => setFormAberto(false)}>Cancelar</button>
+              <button className="concluir" onClick={handleEnviarWhatsApp}>
+                Concluir
+              </button>
+            </div>
           </div>
         </div>
       )}
 
+      {/* BOTÃO ADM */}
       <button className="botao-adm" onClick={() => setAdmModal(true)}>
         ADM
       </button>
@@ -126,11 +179,40 @@ function Home({ produtos }) {
               value={senhaADM}
               onChange={(e) => setSenhaADM(e.target.value)}
             />
-            <button onClick={validarSenhaADM}>Entrar</button>
-            <button onClick={() => setAdmModal(false)}>Cancelar</button>
+            <div className="botoes">
+              <button onClick={validarSenhaADM}>Entrar</button>
+              <button onClick={() => setAdmModal(false)}>Cancelar</button>
+            </div>
           </div>
         </div>
       )}
+
+      {/* WHATSAPP */}
+      <a
+        href="https://wa.me/5596991624580"
+        className="whatsapp-flutuante"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <img
+          src="https://i.postimg.cc/KYLwjGBp/whatsapp.png"
+          alt="WhatsApp"
+          className="icone-whatsapp"
+        />
+      </a>
+
+      {/* RODAPÉ */}
+      <footer className="rodape">
+        <div className="rodape-conteudo">
+          <p>© {new Date().getFullYear()} LojaReact</p>
+          <p className="rodape-site">
+            Desenvolvido por{" "}
+            <a href="https://wa.me/5596991624580" target="_blank" rel="noreferrer">
+              【J】
+            </a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -139,7 +221,6 @@ function Home({ produtos }) {
 function App() {
   const [produtos, setProdutos] = useState([]);
 
-  // 🔥 CARREGA ESTOQUE INICIAL
   useEffect(() => {
     fetch(API_ESTOQUE)
       .then((r) => r.json())
@@ -160,32 +241,24 @@ function App() {
       });
   }, []);
 
-  // ================= SOCKET LISTENERS =================
   useEffect(() => {
     socket.on("estoque_atualizado", (produto) => {
       setProdutos((prev) =>
         prev.map((p) =>
-          p.id === produto._id
-            ? { ...p, quantidade: produto.quantidade }
-            : p
+          p.id === produto._id ? { ...p, quantidade: produto.quantidade } : p
         )
       );
     });
 
     socket.on("produto_novo", (produto) => {
-      setProdutos((prev) => [
-        ...prev,
-        { ...produto, id: produto._id },
-      ]);
+      setProdutos((prev) => [...prev, { ...produto, id: produto._id }]);
     });
 
     socket.on("produto_removido", (id) => {
       setProdutos((prev) => prev.filter((p) => p.id !== id));
     });
 
-    return () => {
-      socket.off();
-    };
+    return () => socket.off();
   }, []);
 
   return (
