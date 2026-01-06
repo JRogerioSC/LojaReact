@@ -10,7 +10,8 @@ body {
     justify-content: center;
     gap: 2rem;
     padding: 20px;
-    background: #222;
+    background: #e7cfcf;
+    padding: 1px 10px;
 }
 
 .menu li a {
@@ -19,6 +20,10 @@ body {
     font-weight: bold;
     font-size: 40px;
     font-family: "Oswald", sans-serif;
+}
+
+.menu li a:hover{
+    color: #8605f0;
 }
 
 .produtos-container {
@@ -60,7 +65,7 @@ body {
 }
 
 .comprar:hover {
-    background: #0056b3;
+    background: #48b300;
 }
 
 .pagamento {
@@ -176,11 +181,11 @@ ul a:hover {
 .rodape {
     background-color: #111;
     color: #eee;
-    padding: 30px 10px;
+    padding: 1px 10px;
     margin-top: 40px;
     text-align: center;
     font-family: "Poppins", sans-serif;
-    border-top: 3px solid #6c63ff;
+    border-top: 3px solid blue;
 }
 
 .rodape-conteudo p {
@@ -196,7 +201,7 @@ ul a:hover {
 }
 
 .rodape-site a:hover {
-    color: #958df1;
+    color: #3ff109;
 }
 
 /* === ESTILOS DO FORMULÁRIO (MODAL) === */

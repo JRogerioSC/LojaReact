@@ -86,7 +86,7 @@ function Home({ produtos }) {
       {/* MENU */}
       <ul className="menu">
         <li>
-          <a href="/">🥣 LojaReact 🍽</a>
+          <a href="/">🥪 React Burger 🍔</a>
         </li>
       </ul>
 
@@ -211,7 +211,7 @@ function Home({ produtos }) {
       {/* RODAPÉ */}
       <footer className="rodape">
         <div className="rodape-conteudo">
-          <p>© {new Date().getFullYear()} LojaReact</p>
+          <p>© {new Date().getFullYear()} React Burger</p>
           <p className="rodape-site">
             Desenvolvido por{" "}
             <a href="https://wa.me/5596991624580" target="_blank" rel="noreferrer">
