@@ -227,12 +227,14 @@ function Home({ produtos }) {
 // ================= APP =================
 function App() {
   const [produtos, setProdutos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(API_ESTOQUE)
       .then((r) => r.json())
       .then((dados) => {
         setProdutos(
+
           dados.map((p) => ({
             ...p,
             id: p._id,
@@ -245,6 +247,9 @@ function App() {
                   : Espetinho),
           }))
         );
+
+        setLoading(false);
+
       });
   }, []);
 
@@ -268,14 +273,21 @@ function App() {
     return () => socket.off();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <div className="loader">CARREGANDO…</div>
+      </div>
+    );
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home produtos={produtos} />} />
-        <Route path="/pagamento" element={<Pagamento />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Home produtos={produtos} />} />
+      <Route path="/pagamento" element={<Pagamento />} />
+    </Routes>
   );
+
 }
 
 export default App;
