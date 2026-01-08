@@ -44,8 +44,8 @@ body {
 
 /* 🔴 QUEM CORTA A IMAGEM É ESSE CARA */
 .produto-img {
-    width: 330px;
-    height: 300px;
+    width: 250px;
+    height: 230px;
 
     border-radius: 8px;
     background-size: cover;
