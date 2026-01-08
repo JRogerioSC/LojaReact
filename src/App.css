@@ -18,7 +18,7 @@ body {
     color: rgb(113, 206, 59);
     text-decoration: none;
     font-weight: bold;
-    font-size: 40px;
+    font-size: 38px;
     font-family: "Oswald", sans-serif;
 }
 
@@ -324,13 +324,13 @@ ul a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0a0a0a;
+    background: transparent;
 }
 
 .loader {
     font-size: 22px;
     font-weight: bold;
-    color: #fff;
+    color: #10f708;
     letter-spacing: 2px;
     animation: pulse 1.4s infinite;
 }
