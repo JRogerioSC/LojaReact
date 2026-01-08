@@ -35,19 +35,43 @@ body {
 }
 
 .produto {
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    overflow: hidden;
-    /* 🔥 ISSO é o segredo */
-    margin: 0 auto;
+    width: 200px;
+    /* ajuste como quiser */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.produto img {
+/* 🔴 QUEM CORTA A IMAGEM É ESSE CARA */
+.produto-img {
+    width: 330px;
+    height: 300px;
+
+    border-radius: 8px;
+    background-size: cover;
+    /* 🔥 chave */
+    background-position: center;
+    background-repeat: no-repeat;
+
+    background-color: #eee;
+}
+
+
+/* REGRA DE OURO */
+.produto-img img {
+    position: absolute;
+    top: 0;
+    left: 0;
+
     width: 100%;
     height: 100%;
-    object-fit: contain;
+
+    object-fit: cover;
+    /* 🔥 ESSENCIAL */
+    display: block;
 }
+
+
 
 .preco {
     font-size: 1.2em;

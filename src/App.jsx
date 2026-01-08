@@ -99,9 +99,13 @@ function Home({ produtos }) {
           return (
             <div key={p.id} className="produto">
               <h3>{p.nome}</h3>
-              <div className="produto-img">
-                <img src={p.imagem} alt={p.nome} />
-              </div>
+              <div
+                className="produto-img"
+                role="img"
+                aria-label={p.nome}
+                style={{ backgroundImage: `url(${p.imagem})` }}
+              />
+
 
 
               <p className="preco">R$ {p.preco.toLocaleString("pt-BR")}</p>
@@ -137,62 +141,66 @@ function Home({ produtos }) {
       </div>
 
       {/* MODAL */}
-      {formAberto && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Dados do Cliente</h2>
+      {
+        formAberto && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h2>Dados do Cliente</h2>
 
-            <input
-              placeholder="Nome"
-              value={formData.nome}
-              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-            />
-            <input
-              placeholder="Telefone"
-              value={formData.telefone}
-              onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-            />
-            <textarea
-              placeholder="Endereço"
-              value={formData.endereco}
-              onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-            />
+              <input
+                placeholder="Nome"
+                value={formData.nome}
+                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              />
+              <input
+                placeholder="Telefone"
+                value={formData.telefone}
+                onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+              />
+              <textarea
+                placeholder="Endereço"
+                value={formData.endereco}
+                onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
+              />
 
-            <p className="observacao-pagamento">
-              Envie o comprovante de pagamento ao vendedor para agilizar a entrega.
-            </p>
+              <p className="observacao-pagamento">
+                Envie o comprovante de pagamento ao vendedor para agilizar a entrega.
+              </p>
 
-            <div className="botoes">
-              <button onClick={() => setFormAberto(false)}>Cancelar</button>
-              <button className="concluir" onClick={handleEnviarWhatsApp}>
-                Concluir
-              </button>
+              <div className="botoes">
+                <button onClick={() => setFormAberto(false)}>Cancelar</button>
+                <button className="concluir" onClick={handleEnviarWhatsApp}>
+                  Concluir
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* BOTÃO ADM */}
       <button className="botao-adm" onClick={() => setAdmModal(true)}>
         ADM
       </button>
 
-      {admModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <input
-              type="password"
-              placeholder="Senha ADM"
-              value={senhaADM}
-              onChange={(e) => setSenhaADM(e.target.value)}
-            />
-            <div className="botoes">
-              <button onClick={validarSenhaADM}>Entrar</button>
-              <button onClick={() => setAdmModal(false)}>Cancelar</button>
+      {
+        admModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <input
+                type="password"
+                placeholder="Senha ADM"
+                value={senhaADM}
+                onChange={(e) => setSenhaADM(e.target.value)}
+              />
+              <div className="botoes">
+                <button onClick={validarSenhaADM}>Entrar</button>
+                <button onClick={() => setAdmModal(false)}>Cancelar</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* WHATSAPP */}
       <a
@@ -220,7 +228,7 @@ function Home({ produtos }) {
           </p>
         </div>
       </footer>
-    </div>
+    </div >
   );
 }
 
