@@ -372,3 +372,27 @@ ul a:hover {
         opacity: 0.3;
     }
 }
+
+.produto-resumo {
+    margin-top: 16px;
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f9f9f9;
+    text-align: center;
+}
+
+.imagem-produto {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.valor-produto {
+    font-weight: bold;
+    font-size: 18px;
+    color: #2e7d32;
+}
