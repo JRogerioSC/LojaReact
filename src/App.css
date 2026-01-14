@@ -354,7 +354,7 @@ ul a:hover {
 .loader {
     font-size: 22px;
     font-weight: bold;
-    color: #10f708;
+    color: #0f0f0f;
     letter-spacing: 2px;
     animation: pulse 1.4s infinite;
 }
